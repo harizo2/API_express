@@ -1,70 +1,51 @@
-import express, { type Express,type NextFunction,type Request,type Response  } from 'express';
-import app from '../server';
-import {type Student } from "../Model/type";
+import express, { type Request,type Response  } from 'express';
+import { createStudent, getAll, getById, removeStudent, studentUpdating } from '../Service/studentService';
 
 
-let etudiants: Student[] = [
-      { id: 1, name: "Dupont" },
-      { id: 2, name: "Martin" }
-];
-
-app.get('/students', (req: Request, res: Response) =>{
-    res.status(200).json(etudiants);
-})
-
-app.post('/students', (req: Request, res: Response)=>{
-    const nouvel: Student = {id: Date.now(), name: req.body.nom};
-    etudiants.push(nouvel);
-    res.status(201).json(nouvel);
-})
-
-app.put('/students/:id', (req: Request, res: Response) => {
-  const id = Number(req.params.id);
-  const { name } = req.body;
-
-  const etudiant = etudiants.find(e => e.id === id);
-
-  if (!etudiant) {
-    return res.status(404).json({ message: "Étudiant non trouvé" });
+export const getStudents = async (req: Request, res: Response) => {
+  try {
+    const students = await getAll();
+    res.status(200).json(students);
+  } catch (error) {
+    res.status(500).json({error : 'Error server'});
   }
+}
 
-  etudiant.name = name;
-
-  res.status(200).json(etudiant);
-});
-
-app.get('/students/:id', (req: Request, res:Response) =>{
-    const id = Number(req.params.id);
-    const etudiant = etudiants.find(e => e.id === id);
-
-      if (!etudiant) {
-         return res.status(404).json({ message: "Étudiant non trouvé" });
-        }
-
-    res.status(200).json(etudiant);
-});
-
-app.patch('/students/:id', (req:Request, res:Response) =>{
-    const id = Number(req.params.id);
-    const etudiant = etudiants.find(e => e.id === id);
-    
-    if (!etudiant) {
-        return res.status(404).json({ message: "Étudiant non trouvé" });
-    }
-    
-    Object.assign(etudiant, req.body);
-    res.status(200).json(etudiant);
-});
-
-app.delete('/students/:id', (req, res) => {
-  const id = parseInt(req.params.id);
-  const index = etudiants.findIndex(e => e.id === id);
-
-  if (index === -1) {
-    return res.status(404).json({ message: "Étudiant non trouvé" });
+export const getStudentById = async (req: Request, res: Response) =>{
+  try {
+    const student = await getById(Number(req.params.id));
+    res.status(200).json(student);
+  } catch (error) {
+    res.status(404).json({error : 'Student not found'});
   }
+}
 
-  etudiants.splice(index, 1);
+export const studentCreating = async (req: Request, res: Response) =>{
+  try{
+    const { name } = req.body;
+    const student = await createStudent(name);
+    res.status(201).json(student);
+  }catch(error) {
+    res.status(500).json({error : 'Error server'});
+  }
+}
 
-  res.status(204).send();
-});
+export const updateStudent = async (req: Request, res: Response) =>{
+  try {
+    const {name} = req.body;
+    const student = await studentUpdating(Number(req.params.id), name);
+    res.status(200).json(student);
+  } catch (error) {
+    res.status(404).json({error : 'Student not found'});
+  }
+}
+
+export const deleteStudent = async (req: Request, res: Response) => {
+  try {
+    const student = await removeStudent(Number(req.params.id));
+    res.status(200).json({message: 'Delete student'});
+  } catch (error) {
+    res.status(404).json({error : 'Student not found'});
+    
+  }
+}

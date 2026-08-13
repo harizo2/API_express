@@ -1,18 +1,33 @@
-import express, { type Express,type NextFunction,type Request,type Response  } from 'express';
+import express, { type Express, type NextFunction, type Request, type Response } from 'express';
 import dotenv from 'dotenv';
 dotenv.config();
 
+import { pool } from './config/database';
+import * as studentController from './Controller/studentController';
+
 const app: Express = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
-app.use((err: Error, req: Request, res: Response, next: NextFunction) =>{
-    console.error(err);
-    res.status(500).json({message: "Erreur serveur"});
+app.use(express.json());
+
+app.get('/students', studentController.getStudents);
+app.get('/students/:id', studentController.getStudentById);
+app.post('/students', studentController.studentCreating);
+app.put('/students/:id', studentController.updateStudent);
+app.delete('/students/:id', studentController.deleteStudent);
+
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  console.error(err);
+  res.status(500).json({ message: "Erreur serveur" });
 });
-app.use(express.json);
 
-app.listen(port, () => {
-    console.log(`http://localhost:${port}`)
-});
-
-export default app;
+pool.query('SELECT NOW()')
+  .then(() => {
+    console.log('Base de données connectée');
+    app.listen(port, () => {
+      console.log(`Serveur démarré sur http://localhost:${port}`);
+    });
+  })
+  .catch((err) => {
+    console.error('Erreur de connexion à la base de données', err);
+  });

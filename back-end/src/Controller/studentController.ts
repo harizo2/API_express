@@ -22,8 +22,8 @@ export const getStudentById = async (req: Request, res: Response) =>{
 
 export const studentCreating = async (req: Request, res: Response) =>{
   try{
-    const { name } = req.body;
-    const student = await createStudent(name);
+    const { name, email, password } = req.body;
+    const student = await createStudent(name, email, password);
     res.status(201).json(student);
   }catch(error) {
     console.error(error);  
@@ -33,8 +33,8 @@ export const studentCreating = async (req: Request, res: Response) =>{
 
 export const updateStudent = async (req: Request, res: Response) =>{
   try {
-    const {name} = req.body;
-    const student = await studentUpdating(Number(req.params.id), name);
+    const {name, email, password} = req.body;
+    const student = await studentUpdating(Number(req.params.id), name, email, password);
     res.status(200).json(student);
   } catch (error) {
     res.status(404).json({error : 'Student not found'});

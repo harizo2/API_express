@@ -1,4 +1,6 @@
 export interface Student{
     id: Number,
-    name: string
+    name: string,
+    email: string,
+    password: string
 }

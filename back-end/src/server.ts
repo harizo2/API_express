@@ -1,4 +1,5 @@
 import express, { type Express, type NextFunction, type Request, type Response } from 'express';
+import cors from 'cors';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -8,6 +9,9 @@ import * as studentController from './Controller/studentController';
 const app: Express = express();
 const port = process.env.PORT || 3000;
 
+app.use(cors({
+  origin: 'http://localhost:5173'
+}));
 app.use(express.json());
 
 app.get('/students', studentController.getStudents);
@@ -31,3 +35,5 @@ pool.query('SELECT NOW()')
   .catch((err) => {
     console.error('Erreur de connexion à la base de données', err);
   });
+
+export default app;

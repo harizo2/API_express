@@ -26,6 +26,7 @@ export const studentCreating = async (req: Request, res: Response) =>{
     const student = await createStudent(name);
     res.status(201).json(student);
   }catch(error) {
+    console.error(error);  
     res.status(500).json({error : 'Error server'});
   }
 }

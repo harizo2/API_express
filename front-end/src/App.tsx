@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getStudents, createStudent, deleteStudent, type Student } from './api/students';
 
-function App() {
+const App = () => {
   const [students, setStudents] = useState<Student[]>([]);
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(true);
@@ -30,7 +30,6 @@ const handleCreate = async (e: React.FormEvent) => {
     setName('');
     loadStudents();
   } catch (err) {
-    console.error('Erreur détaillée:', err);   // ← ajoute ça
     setError('Erreur lors de la création');
   }
 };
